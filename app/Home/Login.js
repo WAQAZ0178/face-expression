@@ -53,7 +53,10 @@ function Login({ navigation }) {
               <Text style={styles.trouble}> Having Trouble? </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.login} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={styles.login}
+              onPress={() => navigation.navigate("FaceDetection")}
+            >
               <Text style={styles.button}> Login </Text>
             </TouchableOpacity>
           </>

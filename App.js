@@ -4,12 +4,11 @@ import AuthNavigator from "./app/navigation/AuthNavigator";
 import NavigationTheme from "./app/navigation/NavigationTheme";
 import DrawerNavigator from "./app/navigation/DrawerNavigator";
 import FaceDetection from "./app/Home/FaceDetection";
-
+import { RootNavigator } from "./app/navigation/rootNavigator";
 export default function App() {
   return (
     <NavigationContainer theme={NavigationTheme}>
-      <DrawerNavigator />
-      {/* <AuthNavigator/> */}
+      <RootNavigator />
     </NavigationContainer>
     // <FaceDetection/>
   );

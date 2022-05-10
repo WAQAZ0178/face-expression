@@ -1,17 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
+import { postFlaskData } from "../constants/api";
 import * as FaceDetector from "expo-face-detector";
 function FaceDetection() {
   const [hasPermission, setHasPermission] = useState();
   const [faceData, setFaceData] = useState([]);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [Image, setImage] = useState("");
+  let camera = useRef();
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
   }, []);
-
+  const __takePicture = async () => {
+    // let res = await camera.getAvailablePictureSizesAsync("4:3");
+    // console.log(res);
+    const photo = await camera.takePictureAsync();
+    let content = photo?.uri;
+    const file = {
+      uri: content,
+      name: content?.slice(content?.lastIndexOf("/") + 1),
+      type: "image/jpg",
+    };
+    setImage(file);
+    await FlaskUpload(file);
+    console.log("photo is ", file);
+  };
+  const FlaskUpload = async (Img1) => {
+    const body1 = new FormData();
+    body1.append("file", Img1);
+    // console.log(body1);
+    try {
+      var res = await postFlaskData(body1);
+      var json = res.response;
+      console.log("res--", json);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   if (hasPermission === false) {
     return <Text> No access to camera </Text>;
   }
@@ -56,20 +85,75 @@ function FaceDetection() {
     setFaceData(faces);
   };
   return (
-    <Camera
-      type={Camera.Constants.Type.front}
-      style={styles.camera}
-      onFacesDetected={handleFacesDetected}
-      faceDetectorSettings={{
-        mode: FaceDetector.FaceDetectorMode.accurate,
-        detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
-        runClassifications: FaceDetector.FaceDetectorClassifications.all,
-        minDetectionInterval: 100,
-        tracking: true,
-      }}
-    >
-      {getFaceDataView()}
-    </Camera>
+    <View style={{ flex: 1, width: "100%" }}>
+      <Camera
+        style={{ flex: 1, width: "100%" }}
+        pictureSize="640x480"
+        ratio="4:3"
+        ref={(r) => {
+          camera = r;
+        }}
+      ></Camera>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          flexDirection: "row",
+          flex: 1,
+          width: "100%",
+          padding: 20,
+          justifyContent: "space-between",
+        }}
+      >
+        <View
+          style={{
+            alignSelf: "center",
+            flex: 1,
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => __takePicture()}
+            style={{
+              width: 70,
+              height: 70,
+              bottom: 0,
+              borderRadius: 50,
+              backgroundColor: "#fff",
+            }}
+          />
+        </View>
+      </View>
+    </View>
+    // <Camera
+    //   // type={Camera.Constants.Type.front}
+    //   style={styles.camera}
+    //   type={type}
+    //   onFacesDetected={handleFacesDetected}
+    //   faceDetectorSettings={{
+    //     mode: FaceDetector.FaceDetectorMode.accurate,
+    //     detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+    //     runClassifications: FaceDetector.FaceDetectorClassifications.all,
+    //     minDetectionInterval: 100,
+    //     tracking: true,
+    //   }}
+    // >
+    //   <View style={styles.buttonContainer}>
+    //     <TouchableOpacity
+    //       style={styles.button}
+    //       onPress={() => {
+    //         setType(
+    //           type === Camera.Constants.Type.back
+    //             ? Camera.Constants.Type.front
+    //             : Camera.Constants.Type.back
+    //         );
+    //       }}
+    //     >
+    //       <Text style={styles.text}> Flip </Text>
+    //     </TouchableOpacity>
+    //   </View>
+    //   {/* {getFaceDataView()} */}
+    // </Camera>
   );
 }
 const styles = StyleSheet.create({
@@ -101,6 +185,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   txt: {
+    color: "white",
+  },
+  text: {
     color: "white",
   },
 });
