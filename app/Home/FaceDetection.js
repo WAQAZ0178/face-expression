@@ -3,18 +3,20 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
 import { postFlaskData } from "../constants/api";
 import * as FaceDetector from "expo-face-detector";
-function FaceDetection() {
+import { useIsFocused } from "@react-navigation/native";
+function FaceDetection({ navigation }) {
   const [hasPermission, setHasPermission] = useState();
   const [faceData, setFaceData] = useState([]);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [Image, setImage] = useState("");
+  const focus = useIsFocused();
   let camera = useRef();
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
-  }, []);
+  }, [focus]);
   const __takePicture = async () => {
     // let res = await camera.getAvailablePictureSizesAsync("4:3");
     // console.log(res);
@@ -32,11 +34,14 @@ function FaceDetection() {
   const FlaskUpload = async (Img1) => {
     const body1 = new FormData();
     body1.append("file", Img1);
-    // console.log(body1);
     try {
       var res = await postFlaskData(body1);
-      var json = res.response;
-      console.log("res--", json);
+      var json = JSON.stringify(res);
+      navigation.navigate("DrawerNavigator", {
+        screen: "Feed",
+        params: { data: res.data },
+      });
+      console.log("res--", res.data);
     } catch (error) {
       console.error(error);
     }
@@ -89,7 +94,7 @@ function FaceDetection() {
       <Camera
         style={{ flex: 1, width: "100%" }}
         pictureSize="640x480"
-        ratio="4:3"
+        type={Camera.Constants.Type.back}
         ref={(r) => {
           camera = r;
         }}
@@ -189,6 +194,15 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "dodgerblue",
+    padding: 20,
+    borderRadius: 35,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

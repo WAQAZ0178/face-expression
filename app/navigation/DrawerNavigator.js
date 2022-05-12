@@ -85,6 +85,7 @@ export default function DrawerNavigator() {
         component={Root}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen name="FaceDetection" component={FaceDetection} />
       <Stack.Screen name="Feed" component={Album} />
       <Stack.Screen name="Quran" component={Quran} />
