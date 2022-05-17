@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
 import { Camera } from "expo-camera";
 import { postFlaskData } from "../constants/api";
 import * as FaceDetector from "expo-face-detector";
@@ -37,11 +43,25 @@ function FaceDetection({ navigation }) {
     try {
       var res = await postFlaskData(body1);
       var json = JSON.stringify(res);
-      navigation.navigate("DrawerNavigator", {
-        screen: "Feed",
-        params: { data: res.data },
-      });
-      console.log("res--", res.data);
+      if (
+        res?.data?.dominant_emotion == "happy" ||
+        res?.data?.dominant_emotion == "sad" ||
+        res?.data?.dominant_emotion == "angry" ||
+        res?.data?.dominant_emotion == "surprise"
+      ) {
+        navigation.navigate("DrawerNavigator", {
+          screen: "Feed",
+          params: { data: res.data },
+        });
+        console.log("res--", res.data);
+      } else {
+        ToastAndroid.show(
+          "Please try agaian",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+        console.log("else result ", res.data);
+      }
     } catch (error) {
       console.error(error);
     }
