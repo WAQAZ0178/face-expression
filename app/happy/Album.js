@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 function Album({ navigation, route }) {
-  var data = route?.params?.data;
+  var data = route?.params?.mood;
   console.log("params", data);
   useEffect(() => {
     function handleBackButton() {
@@ -30,7 +30,7 @@ function Album({ navigation, route }) {
     >
       <View style={styles.heading}>
         <Text style={styles.top}>
-          Your Recommendations {data?.dominant_emotion}
+          Your Recommendations {data}
         </Text>
       </View>
 
