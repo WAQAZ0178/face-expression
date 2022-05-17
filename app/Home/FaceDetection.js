@@ -58,6 +58,9 @@ function FaceDetection({ navigation }) {
         {
           mood="sad"
         }
+        else{
+        mood=res.data?.dominant_emotion
+        }
         navigation.navigate("DrawerNavigator", {
           screen: "Feed",
           params: { data: mood },
