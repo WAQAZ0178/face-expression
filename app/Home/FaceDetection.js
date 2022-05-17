@@ -49,9 +49,18 @@ function FaceDetection({ navigation }) {
         res?.data?.dominant_emotion == "angry" ||
         res?.data?.dominant_emotion == "surprise"
       ) {
+        let mood=""
+        if( res?.data?.dominant_emotion == "surprise")
+        {
+          mood="shock"
+        }
+        else  if( res?.data?.dominant_emotion == "fear")
+        {
+          mood="sad"
+        }
         navigation.navigate("DrawerNavigator", {
           screen: "Feed",
-          params: { data: res.data },
+          params: { data: mood },
         });
         console.log("res--", res.data);
       } else {
